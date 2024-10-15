@@ -60,14 +60,14 @@ func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consu
 func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component.Host) error {
 	endpoint := fmt.Sprintf("%s%s", ghalr.config.ServerConfig.Endpoint, ghalr.config.Path)
 	ghalr.logger.Info("Starting receiver", zap.String("endpoint", endpoint))
-	listener, err := ghalr.config.ServerConfig.ToListener()
+	listener, err := ghalr.config.ServerConfig.ToListener(ctx)
 	if err != nil {
 		return err
 	}
 	router := httprouter.New()
 	router.POST(ghalr.config.Path, ghalr.handleEvent)
 	router.GET(ghalr.config.HealthCheckPath, ghalr.handleHealthCheck)
-	ghalr.server, err = ghalr.config.ServerConfig.ToServer(host, ghalr.settings.TelemetrySettings, router)
+	ghalr.server, err = ghalr.config.ServerConfig.ToServer(ctx, host, ghalr.settings.TelemetrySettings, router)
 	if err != nil {
 		return err
 	}

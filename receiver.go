@@ -150,13 +150,20 @@ func handleWorkflowRunEvent(
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	githubApiRate := []zap.Field{
+		zap.Int("github.api.rate-limit.core.limit", rateLimit.limit),
+		zap.Int("github.api.rate-limit.core.remaining", rateLimit.remaining),
+		zap.Time("github.api.rate-limit.core.reset", rateLimit.reset),
+	}
 	ghalr.logger.Info(
 		"GitHub Api Rate limits",
 		withWorkflowInfoFields(
-			zap.Int("github.api.rate-limit.core.limit", rateLimit.limit),
-			zap.Int("github.api.rate-limit.core.remaining", rateLimit.remaining),
-			zap.Time("github.api.rate-limit.core.reset", rateLimit.reset),
+			githubApiRate...,
 		)...,
+	)
+	// Use a subset of the fields to avoid issues with the logger processor
+	ghalr.logger.Info(
+		"GitHub Api Rate limits", githubApiRate...,
 	)
 }
 

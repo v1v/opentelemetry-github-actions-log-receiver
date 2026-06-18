@@ -3,8 +3,10 @@ package githubactionslogreceiver
 import (
 	"context"
 	"fmt"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confighttp"
+	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 )
@@ -12,11 +14,12 @@ import (
 var receiverType = component.MustNewType("githubactionslog")
 
 func createDefaultConfig() component.Config {
-	serverConfig := confighttp.NewDefaultServerConfig()
-	serverConfig.NetAddr.Endpoint = fmt.Sprintf("localhost:%d", defaultPort)
+	netAddr := confignet.NewDefaultAddrConfig()
+	netAddr.Transport = confignet.TransportTypeTCP
+	netAddr.Endpoint = fmt.Sprintf("localhost:%d", defaultPort)
 
 	return &Config{
-		ServerConfig:    serverConfig,
+		ServerConfig:    confighttp.ServerConfig{NetAddr: netAddr},
 		Path:            defaultPath,
 		HealthCheckPath: defaultHealthCheckPath,
 		Retry: RetryConfig{

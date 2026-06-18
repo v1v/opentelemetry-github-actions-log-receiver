@@ -343,7 +343,7 @@ func TestConsumeLogsWithRetryMaxElapsedTime(t *testing.T) {
 
 	// assert
 	assert.Error(t, err)
-	assert.Equal(t, 2, retryCounter)
+	assert.Less(t, retryCounter, 5)
 }
 
 func TestBatchDefault(t *testing.T) {

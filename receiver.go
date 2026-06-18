@@ -67,7 +67,7 @@ func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component
 	router := httprouter.New()
 	router.POST(ghalr.config.Path, ghalr.handleEvent)
 	router.GET(ghalr.config.HealthCheckPath, ghalr.handleHealthCheck)
-	ghalr.server, err = ghalr.config.ServerConfig.ToServer(ctx, host, ghalr.settings.TelemetrySettings, router)
+	ghalr.server, err = ghalr.config.ServerConfig.ToServer(ctx, host.GetExtensions(), ghalr.settings.TelemetrySettings, router)
 	if err != nil {
 		return err
 	}

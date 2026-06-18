@@ -1,6 +1,6 @@
 module github.com/v1v/opentelemetry-github-actions-log-receiver
 
-go 1.25.0
+go 1.26
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.10.0

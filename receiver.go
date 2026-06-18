@@ -74,7 +74,6 @@ func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component
 	go func() {
 		if err := ghalr.server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			ghalr.logger.Error("Receiver server has been shutdown", zap.Error(err))
-			ghalr.settings.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(err))
 		}
 	}()
 	return nil

@@ -3,6 +3,7 @@ receivers:
     webhook_secret: ${env:WEBHOOK_SECRET}
     github_auth:
       token: ${env:GITHUB_TOKEN}
+    endpoint: "localhost:55680"
   otlp:
     protocols:
       grpc:

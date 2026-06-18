@@ -37,7 +37,7 @@ run: ## Run the binary
 
 .PHONY: ngrok
 ngrok: ## Run ngrok
-	ngrok http http://localhost:19419
+	ngrok http http://localhost:55680
 
 .PHONY: coverage-html
 coverage-html: ## Generate HTML coverage report at coverage.html

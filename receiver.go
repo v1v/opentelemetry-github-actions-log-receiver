@@ -28,12 +28,12 @@ type githubActionsLogReceiver struct {
 	logger      *zap.Logger
 	runLogCache runLogCache
 	server      *http.Server
-	settings    receiver.CreateSettings
+	settings    receiver.Settings
 	ghClient    *github.Client
 	obsrecv     *receiverhelper.ObsReport
 }
 
-func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consumer.Logs) (*githubActionsLogReceiver, error) {
+func newLogsReceiver(cfg *Config, params receiver.Settings, consumer consumer.Logs) (*githubActionsLogReceiver, error) {
 	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 		ReceiverID:             params.ID,
 		Transport:              "http",

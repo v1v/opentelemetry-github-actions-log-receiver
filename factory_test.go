@@ -13,7 +13,7 @@ func TestNewFactory(t *testing.T) {
 	cfg := factory.CreateDefaultConfig()
 	_, err := factory.CreateLogsReceiver(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		cfg,
 		consumertest.NewNop(),
 	)

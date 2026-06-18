@@ -90,7 +90,7 @@ func TestWorkflowRunHandlerCompletedAction(t *testing.T) {
 		Body(reader)
 	ghClient := github.NewClient(nil)
 	consumer := new(consumertest.LogsSink)
-	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopCreateSettings()})
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +141,7 @@ func TestWorkflowRunHandlerCompletedAction(t *testing.T) {
 
 func TestWorkflowRunHandlerRequestedAction(t *testing.T) {
 	// arrange
-	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopCreateSettings()})
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -202,7 +202,7 @@ func TestConsumeLogsWithRetry(t *testing.T) {
 			Path:            defaultPath,
 			HealthCheckPath: defaultHealthCheckPath,
 		},
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		consumer,
 	)
 
@@ -240,7 +240,7 @@ func TestConsumeLogsWithRetryPermanent(t *testing.T) {
 			Path:            defaultPath,
 			HealthCheckPath: defaultHealthCheckPath,
 		},
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		consumer,
 	)
 
@@ -282,7 +282,7 @@ func TestConsumeLogsWithRetryMaxElapsedTime(t *testing.T) {
 				MaxElapsedTime: 2 * time.Millisecond,
 			},
 		},
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		consumer,
 	)
 
@@ -324,7 +324,7 @@ func TestBatchDefault(t *testing.T) {
 		t.Fatal(err)
 	}
 	logsConsumer := new(consumertest.LogsSink)
-	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopCreateSettings()})
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,7 +388,7 @@ func TestBatchMultiLogLines(t *testing.T) {
 		t.Fatal(err)
 	}
 	logsConsumer := new(consumertest.LogsSink)
-	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopCreateSettings()})
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings()})
 	if err != nil {
 		t.Fatal(err)
 	}

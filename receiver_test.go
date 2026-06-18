@@ -173,6 +173,52 @@ func TestWorkflowRunHandlerRequestedAction(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+func TestHandleEventInvalidSignature(t *testing.T) {
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings(receiverType)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ghalr := githubActionsLogReceiver{
+		logger: zaptest.NewLogger(t),
+		config: &Config{
+			WebhookSecret: "secret",
+		},
+		consumer: consumertest.NewNop(),
+		obsrecv:  obsrecv,
+	}
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader([]byte(`{"action":"requested"}`)))
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("X-GitHub-Event", "workflow_run")
+
+	ghalr.handleEvent(w, r, nil)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestHandleEventInvalidPayload(t *testing.T) {
+	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{ReceiverCreateSettings: receivertest.NewNopSettings(receiverType)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ghalr := githubActionsLogReceiver{
+		logger:   zaptest.NewLogger(t),
+		config:   &Config{},
+		consumer: consumertest.NewNop(),
+		obsrecv:  obsrecv,
+	}
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader([]byte(`{"invalid_json":`)))
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("X-GitHub-Event", "workflow_run")
+
+	ghalr.handleEvent(w, r, nil)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
 type failingConsumer struct {
 	consumertest.Consumer
 	consumeLogsFunc func(context.Context, plog.Logs) error

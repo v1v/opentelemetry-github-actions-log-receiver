@@ -38,3 +38,9 @@ run: ## Run the binary
 .PHONY: ngrok
 ngrok: ## Run ngrok
 	ngrok http http://localhost:19419
+
+.PHONY: coverage-html
+coverage-html: ## Generate HTML coverage report at coverage.html
+	go test ./... -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"

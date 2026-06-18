@@ -1,3 +1,5 @@
 /ocb
 /.idea
 /bin
+
+coverage.*

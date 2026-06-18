@@ -7,6 +7,9 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/config/configopaque"
 	"os"
@@ -177,4 +180,41 @@ func TestAttachRunLog2(t *testing.T) {
 
 	// assert
 	assert.NotNil(t, jobs[0].Steps[0].Log)
+}
+
+func TestFetchLogSuccess(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("zip-content"))
+	}))
+	defer ts.Close()
+	client := ts.Client()
+	defer client.CloseIdleConnections()
+
+	body, err := fetchLog(client, ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer body.Close()
+
+	content, err := io.ReadAll(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, "zip-content", string(content))
+}
+
+func TestFetchLogNon200(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte("denied"))
+	}))
+	defer ts.Close()
+	client := ts.Client()
+	defer client.CloseIdleConnections()
+
+	body, err := fetchLog(client, ts.URL)
+
+	assert.Nil(t, body)
+	assert.EqualError(t, err, "failed to get logs: 403 Forbidden")
 }

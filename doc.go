@@ -3,4 +3,4 @@
 
 //go:generate mdatagen metadata.yaml
 
-package githubactionslogreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/githubactionslogreceiver"
+package githubactionslogreceiver // import "github.com/v1v/opentelemetry-github-actions-log-receiver"

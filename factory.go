@@ -2,19 +2,21 @@ package githubactionslogreceiver
 
 import (
 	"context"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/localhostgate"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/githubactionslogreceiver/internal/metadata"
+	"fmt"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confighttp"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 )
 
+var receiverType = component.MustNewType("githubactionslog")
+
 func createDefaultConfig() component.Config {
+	serverConfig := confighttp.NewDefaultServerConfig()
+	serverConfig.NetAddr.Endpoint = fmt.Sprintf("localhost:%d", defaultPort)
+
 	return &Config{
-		ServerConfig: confighttp.ServerConfig{
-			Endpoint: localhostgate.EndpointForPort(defaultPort),
-		},
+		ServerConfig:    serverConfig,
 		Path:            defaultPath,
 		HealthCheckPath: defaultHealthCheckPath,
 		Retry: RetryConfig{
@@ -28,7 +30,7 @@ func createDefaultConfig() component.Config {
 
 func createLogsReceiver(
 	_ context.Context,
-	params receiver.CreateSettings,
+	params receiver.Settings,
 	rConf component.Config,
 	consumer consumer.Logs,
 ) (receiver.Logs, error) {
@@ -39,8 +41,8 @@ func createLogsReceiver(
 // NewFactory creates a factory for githubactionslogsreceiver.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
-		component.MustNewType(metadata.Type.String()),
+		receiverType,
 		createDefaultConfig,
-		receiver.WithLogs(createLogsReceiver, metadata.LogsStability),
+		receiver.WithLogs(createLogsReceiver, component.StabilityLevelAlpha),
 	)
 }

@@ -11,9 +11,9 @@ import (
 func TestNewFactory(t *testing.T) {
 	factory := NewFactory()
 	cfg := factory.CreateDefaultConfig()
-	_, err := factory.CreateLogsReceiver(
+	_, err := factory.CreateLogs(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(receiverType),
 		cfg,
 		consumertest.NewNop(),
 	)

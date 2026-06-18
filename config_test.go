@@ -1,7 +1,7 @@
 package githubactionslogreceiver_test
 
 import (
-	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/githubactionslogreceiver"
+	"github.com/v1v/opentelemetry-github-actions-log-receiver"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

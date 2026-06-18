@@ -28,12 +28,12 @@ type githubActionsLogReceiver struct {
 	logger      *zap.Logger
 	runLogCache runLogCache
 	server      *http.Server
-	settings    receiver.CreateSettings
+	settings    receiver.Settings
 	ghClient    *github.Client
 	obsrecv     *receiverhelper.ObsReport
 }
 
-func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consumer.Logs) (*githubActionsLogReceiver, error) {
+func newLogsReceiver(cfg *Config, params receiver.Settings, consumer consumer.Logs) (*githubActionsLogReceiver, error) {
 	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 		ReceiverID:             params.ID,
 		Transport:              "http",
@@ -58,7 +58,7 @@ func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consu
 }
 
 func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component.Host) error {
-	endpoint := fmt.Sprintf("%s%s", ghalr.config.ServerConfig.Endpoint, ghalr.config.Path)
+	endpoint := fmt.Sprintf("%s%s", ghalr.config.ServerConfig.NetAddr.Endpoint, ghalr.config.Path)
 	ghalr.logger.Info("Starting receiver", zap.String("endpoint", endpoint))
 	listener, err := ghalr.config.ServerConfig.ToListener(ctx)
 	if err != nil {
@@ -67,14 +67,13 @@ func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component
 	router := httprouter.New()
 	router.POST(ghalr.config.Path, ghalr.handleEvent)
 	router.GET(ghalr.config.HealthCheckPath, ghalr.handleHealthCheck)
-	ghalr.server, err = ghalr.config.ServerConfig.ToServer(ctx, host, ghalr.settings.TelemetrySettings, router)
+	ghalr.server, err = ghalr.config.ServerConfig.ToServer(ctx, host.GetExtensions(), ghalr.settings.TelemetrySettings, router)
 	if err != nil {
 		return err
 	}
 	go func() {
 		if err := ghalr.server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			ghalr.logger.Error("Receiver server has been shutdown", zap.Error(err))
-			ghalr.settings.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(err))
 		}
 	}()
 	return nil

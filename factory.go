@@ -12,10 +12,11 @@ import (
 var receiverType = component.MustNewType("githubactionslog")
 
 func createDefaultConfig() component.Config {
+	serverConfig := confighttp.NewDefaultServerConfig()
+	serverConfig.NetAddr.Endpoint = fmt.Sprintf("localhost:%d", defaultPort)
+
 	return &Config{
-		ServerConfig: confighttp.ServerConfig{
-			Endpoint: fmt.Sprintf("localhost:%d", defaultPort),
-		},
+		ServerConfig:    serverConfig,
 		Path:            defaultPath,
 		HealthCheckPath: defaultHealthCheckPath,
 		Retry: RetryConfig{

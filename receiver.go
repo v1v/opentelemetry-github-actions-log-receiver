@@ -58,7 +58,7 @@ func newLogsReceiver(cfg *Config, params receiver.Settings, consumer consumer.Lo
 }
 
 func (ghalr *githubActionsLogReceiver) Start(ctx context.Context, host component.Host) error {
-	endpoint := fmt.Sprintf("%s%s", ghalr.config.ServerConfig.Endpoint, ghalr.config.Path)
+	endpoint := fmt.Sprintf("%s%s", ghalr.config.ServerConfig.NetAddr.Endpoint, ghalr.config.Path)
 	ghalr.logger.Info("Starting receiver", zap.String("endpoint", endpoint))
 	listener, err := ghalr.config.ServerConfig.ToListener(ctx)
 	if err != nil {

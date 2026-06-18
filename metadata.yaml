@@ -11,4 +11,4 @@ status:
 
 tests:
     config:
-        endpoint: localhost:19419
+        endpoint: localhost:55679
